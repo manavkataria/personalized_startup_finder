@@ -9,7 +9,7 @@ import json
 import pickle
 
 def index(request):
-    value = compile_user_params()
+    value = compile_user_params(username=request.GET['user'])
     return JsonResponse({'result': value})
 
 def detail(request, normalized_name):
