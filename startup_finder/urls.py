@@ -20,4 +20,8 @@ urlpatterns = [
     url(r'^$', include('core.urls')),
     # url(r'^core/', include('core.urls')),
     # url(r'^admin/', admin.site.urls),
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^$', 'django_social_app.views.login'),
+    url(r'^home/$', 'django_social_app.views.home'),
+    url(r'^logout/$', 'django_social_app.views.logout'),
 ]
