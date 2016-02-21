@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        .inner_circle {
+            fill: #ffaa00;
+        }
+
+        .inner_circle_selected {
+            fill: #00aa00;
+            fill-opacity: 1.0;
+        }
+
+        tspan {
+            font-size: 24px;
+        }
+
+        .label {
+            fill: #aa0000;
+        }
+    </style>
+</head>
+<body>
+
+<script src="d3.min.js"></script>
+<script type="text/javascript">
+    selected_circle_id = -1;
+    all_data = {};
+
+    h = w = 800;
+    text_w = 500;
+    pad = 20;
+    num_levels = 6;  // 5 + 1 central image.
+    function select_inner_circle(id) {
+        if (selected_circle_id != -1) {
+            d3.select("#i" + selected_circle_id).classed('inner_circle_selected',
+                    false);
+        }
+        d3.select("#i" + id).classed('inner_circle_selected', true);
+        selected_circle_id = id;
+        d3.select("#info").selectAll("tspan").remove();
+        for (i = 0; i < all_data[-1].length; i++) {
+            if (all_data[-1][i]["Company name"] == id) {
+                d3.select("#info").append("tspan").text("Company Name").classed("label", true);
+                d3.select("#info").append("tspan").text(" : " + all_data[-1][i]["Company name"]);
+                d3.select("#info").append("tspan").text("Number of employees").classed("label", true);
+                        d3.select("#info").append("tspan").text(" : " +
+                                all_data[-1][i]["Number of employees"]);
+                d3.select("#info").append("tspan").text("Funding").classed("label", true);
+                        d3.select("#info").append("tspan").text(" : " + all_data[-1][i]["Funding"]);
+                d3.select("#info").append("tspan").text("Number of funding rounds").classed("label", true);
+                        d3.select("#info").append("tspan").text(" : " +
+                all_data[-1][i]["Number of funding rounds"]);
+            }
+        }
+        d3.selectAll(".label").attr({x: w + 2 * pad, dy: '3em'});
+    }
+
+    d3.json("temp", function(error, data) {
+        if (error) {
+            alert("Couldn't load data.");
+            return;
+        }
+        all_data = data;
+        r = Math.floor(h*0.5/(num_levels));  // Center radius.
+        rs = [1.3*r, 1.1*r, 0.9*r, 0.8*r, 0.7*r];  // Scale nearer circles larger.
+        svg = d3.select("body").append("svg").attr({height: h, width: w + 2 * pad + text_w });
+        svg.append("circle").attr({cx: w/2, cy: h/2, r: r, stroke: 'red',
+            'stroke-width':7, 'fill-opacity':0.0});
+        svg.append("image").attr({'xlink:href':"user.png", x: w/2-r, y:h/2-r,
+            height: 2*r, width: 2*r});
+        svg.append("line").attr({x1:w + pad, y1:0, x2: w + pad, y2:h, stroke: 'black',
+            'stroke-width':5});
+
+        temp_r = r;
+        for (i = 0; i < rs.length; i++) {
+            temp_r += rs[i];
+            svg.append("circle").attr({cx: w/2, cy: h/2, r: temp_r, stroke: 'black',
+                    'stroke-width': 3, 'fill-opacity': 0.0});
+        }
+        temp_r = r;
+        for (level = 0; level < num_levels - 1; level++) {
+            temp_r += rs[level]/2;
+            inner_r = 0.85 * rs[level]/ 2;  // leave some margin with the stroke.
+            for (i = 0; i < data[level].length; i++) {
+                svg.append("circle").attr({
+                    id: "i"+data[level][i],
+                    cx: w/2 + temp_r*Math.cos(2*Math.PI*i/data[level].length),
+                    cy: h/2 + temp_r*Math.sin(2*Math.PI*i/data[level].length),
+                    r: inner_r, stroke: 'black', 'stroke-width': 1,
+                    'fill-opacity':0.0,
+                    class: "inner_circle",
+                    onmouseover:
+                            "evt.target.setAttribute('fill-opacity', '0.5');",
+                    onmouseout:
+                            "evt.target.setAttribute('fill-opacity', '0.0');",
+                    onmousedown: "select_inner_circle(" + data[level][i] + ");"
+                });
+            }
+            temp_r += rs[level]/2;
+        }
+        svg.append("text").attr({ id: 'info', x: w + 2 * pad, y: 0 });
+    })
+</script>
+
+</body>
+</html>
