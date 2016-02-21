@@ -1,3 +1,4 @@
 python-social-auth==0.2.12
 django==1.9.2
 MySQL-python==1.2.5
+BeautifulSoup==3.2.1
