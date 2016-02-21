@@ -3,5 +3,6 @@ An app to find a small and mid-sized companies to work at. Integrations: Crunchb
 
 # Installation
 + git clone https://github.com/manavkataria/personalized_startup_finder.git
-+ pip install -U -r requirements.txt
-+ django-admin runserver 
++ sudo -H pip install -U -r requirements.txt
++ python manage.py runserver 
++ http://localhost:8000/core
