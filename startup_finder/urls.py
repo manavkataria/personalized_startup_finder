@@ -22,10 +22,12 @@ urlpatterns = [
     # url(r'^core/', include('core.urls')),
     url(r'^admin/', admin.site.urls),
     url('', include('social.apps.django_app.urls', namespace='social')),
-    url(r'^$', 'django_social_app.views.login'),
+    url(r'^login/$', 'django_social_app.views.login'),
     url(r'^home/$', 'django_social_app.views.home'),
     url(r'^logout/$', 'django_social_app.views.logout'),
     url(r'^(?P<normalized_name>[a-z]+)/$', views.detail, name='detail'),
     # ex: /polls/5/results/
     url(r'^(?P<normalized_name>[a-z]+)/results/$', views.results, name='results'),
+    url(r'^connections/$', 'django_social_app.views.connections'),
+    url(r'^get_access_token/$', 'django_social_app.views.get_access_token'),
 ]

@@ -3,5 +3,11 @@
   <br>
   <a href="/logout">Logout</a>
 {% else %}
-  <a href="{% url 'social:begin' backend='linkedin-oauth2' %}">Login with Linkedin</a>
+    API_KEY = '7522okfvc7gkp8'
+    API_SECRET = 'dQqSsfyiW0H7a2BP'
+    RETURN_URL = 'http://127.0.0.1:8000/get_access_token'
+    authentication = LinkedInAuthentication(API_KEY, API_SECRET, RETURN_URL,
+                                            ['r_publicprofile'])
+    print authentication.authorization_url
+    application = LinkedInApplication(authentication
 {% endif %}

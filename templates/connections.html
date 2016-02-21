@@ -1,0 +1,7 @@
+{% if user and not user.is_anonymous %}
+  <a>Hello, {{ user.get_full_name }}!</a>
+  <br>
+  <a href="https://api.linkedin.com/v1/people/~/connections?oauth2_access_token=">connections</a>
+  <a href="/logout">Logout</a>
+{% endif %}
+<a href="https://api.linkedin.com/v1/people/~/connections?oauth2_access_token={{ access_token }}">connections</a>
