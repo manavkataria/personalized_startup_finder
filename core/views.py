@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from .models import CbObjects
 
 import urllib2, sys
-import json
+import json, ipdb
 import pickle
 
 def index(request):
@@ -39,7 +39,7 @@ USERS = {
     }
 }
 
-def compile_user_params(username='software'):
+def compile_user_params(username='manav'):
     """
     :param username:
     :return: json object to Frontend API call
@@ -82,7 +82,7 @@ def getRanking(domains, location):
     companies = CbObjects.objects.filter(entity_type='company').exclude(category_code=None).exclude(funding_total_usd=None).values('name')
     companies_set = set(companies_dict.get('name') for companies_dict in companies)
     # TODO: write into mysqldb.
-    # companies_set = set(['IBM', 'Apple'])
+    # companies_set = set(['IBM', 'Apple', 'Juniper Networks', 'Google', 'Microsoft', 'Intel', 'Theranos', 'Uber', 'Pintrest'])
 
     ranking = []
     LIMIT = 500
@@ -114,16 +114,26 @@ def getRanking(domains, location):
             if overallRating:
                 ranking.append(info)
     except Exception, e:
-        pickle.dump(ranking, open("ranking.manav.pkl", "wb" ) )
-        print len(ranking)
+        pass
+        # pickle.dump(ranking, open("ranking.manav.pkl", "wb" ) )
+        # print len(ranking)
         # raise e
         # continue
 
-    return ranking
+    sorted_ranking = sorted(ranking, key=lambda k: k['overallRating'], reverse=True)
+
+    return sorted_ranking
 
 
 
 def getGlassdoorInfo(company):
+
+    filename = 'pkl/' + company + ".glassdoor.pkl"
+    f = open(filename, 'rb')
+
+    if (f):
+        return pickle.load(f)
+
     url = "http://api.glassdoor.com/api/api.htm?t.p=55690&t.k=em66CFmfXYu&userip=172.23.227.50&useragent=Mozilla&format=json&v=1&action=employers&q="
     hdr = {'User-Agent': 'Mozilla/5.0'}
     finalURL = url + urllib2.quote(company)
