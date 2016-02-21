@@ -3,6 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.http import HttpResponse, JsonResponse
 from .models import CbObjects
+from django.shortcuts import *
 
 import urllib2, sys
 import json, ipdb
@@ -18,6 +19,13 @@ def detail(request, normalized_name):
 def results(request, normalized_name):
     response = "You're looking at the results of company %s."
     return HttpResponse(response % normalized_name)
+
+
+def ui(request):
+    return render_to_response("ui.html")
+
+def userpng(request):
+    return render_to_response("user.png")
 
 
 USERS = {
