@@ -16,3 +16,5 @@ Pending Integrations:
 + http://localhost:8000/ui
 + Enter "manav" in the text box for Ranked results of Companies.
 
+# Historic Communication (inactive)
++ Slack Channel: https://personalizedstartup.slack.com/
