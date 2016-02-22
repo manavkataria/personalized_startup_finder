@@ -66,9 +66,6 @@ def getRanking(domains, location):
     Filter Half a million entities down to a few companies best suited for my preference
     :return:
     """
-    # All Categories
-    # categories = CbObjects.objects.filter(entity_type='company').values('category_code')
-    # cat_set = set(cat.get('category_code') for cat in categories)
 
     # All Tags
     # tags_set = set()
@@ -87,18 +84,25 @@ def getRanking(domains, location):
     # print tags_set
     # Both Categories and Tags, Combined
 
-    companies = CbObjects.objects.filter(entity_type='company').exclude(category_code=None).exclude(funding_total_usd=None).values('name')
-    companies_set = set(companies_dict.get('name') for companies_dict in companies)
+    companies = CbObjects.objects.none()
+
+    # Filter by domain
+    for domain in domains:
+        companies = companies | CbObjects.objects.filter(category_code=domain)
+
+    companies_names_qs = companies.values('name')
+    companies_names = [companies_dict.get('name') for companies_dict in companies_names_qs]
+
     # TODO: write into mysqldb.
-    # companies_set = set(['IBM', 'Apple', 'Juniper Networks', 'Google', 'Microsoft', 'Intel', 'Theranos', 'Uber', 'Pintrest'])
+    # companies_names = set(['IBM', 'Apple', 'Juniper Networks', 'Google', 'Microsoft', 'Intel', 'Theranos', 'Uber', 'Pintrest'])
 
     ranking = []
-    LIMIT = 500
+    LIMIT = 5000
     MILESTONE = 0
     i = 0
 
     try:
-        for company in companies_set:
+        for company in companies_names:
             if i < MILESTONE:
                 i = i+1
                 continue
@@ -136,11 +140,15 @@ def getRanking(domains, location):
 
 def getGlassdoorInfo(company):
 
-    filename = 'pkl/' + company + ".glassdoor.pkl"
-    f = open(filename, 'rb')
+    try:
+        filename = 'pkl/' + company + ".glassdoor.pkl"
+        f = open(filename, 'rb')
 
-    if (f):
-        return pickle.load(f)
+        if (f):
+            return pickle.load(f)
+    except:
+        # continue if pickle files not found.
+        pass
 
     url = "http://api.glassdoor.com/api/api.htm?t.p=55690&t.k=em66CFmfXYu&userip=172.23.227.50&useragent=Mozilla&format=json&v=1&action=employers&q="
     hdr = {'User-Agent': 'Mozilla/5.0'}
@@ -176,6 +184,5 @@ def getGlassdoorInfo(company):
     else:
         result = None
 
-
-    pickle.dump(result, open(company + ".glassdoor.pkl", "wb"))
+    pickle.dump(result, open('pkl/' + company + ".glassdoor.pkl", "wb"))
     return result
