@@ -18,3 +18,6 @@ Pending Integrations:
 
 # Historic Communication (inactive)
 + Slack Channel: https://personalizedstartup.slack.com/
+
+# Presentation Slides
++ https://docs.google.com/presentation/d/1cUGJoKuRQnqf8eMgpdHoeCFwph_inqmpazLAhzqca6E/edit?usp=sharing
