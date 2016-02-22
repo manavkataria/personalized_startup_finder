@@ -18,7 +18,7 @@
 <script type="text/javascript">
     selected_circle_id = -1;
     all_data = {};
-
+    var username = "";
     h = w = 800;
     text_w = 500;
     pad = 20;
@@ -46,8 +46,25 @@
         d3.selectAll(".label").attr({x: w + 2 * pad, dy: '3em'});
     }
 
+    function showUserInfo() {
+        if (selected_circle_id != -1) {
+            d3.select("#i" + selected_circle_id).classed('inner_circle_selected',
+                    false);
+            selected_circle_id = -1;
+        }
+        user = username == "appy"? "Apekshit Sharma" : "Manav Kataria";
+        domains = username == "appy"? "software, web" : "medical, analytics, health, education";
+        d3.select("#info").selectAll("tspan").remove();
+        d3.select("#info").append("tspan").text("User").classed("label", true);
+        d3.select("#info").append("tspan").text(user);
+        d3.select("#info").append("tspan").text("Domains").classed("label", true);
+        d3.select("#info").append("tspan").text(domains);
+        d3.selectAll(".label").attr({x: w + 2 * pad, dy: '3em'});
+    }
+
     function submit() {
-        url = "http://127.0.0.1:8000/?user=" + document.getElementById("user").value;
+        username = document.getElementById("user").value;
+        url = "http://127.0.0.1:8000/?user=" + username;
         d3.json(url, function (error, d) {
             if (error) {
                 alert("Couldn't load data." + error.toString());
@@ -55,9 +72,15 @@
             }
             //rand = Math.random();
             //len = 40 + Math.floor(rand * 40);
-            data = d.result
+            data = [];
+            for (i = 0; i < d.result.length; i++) {
+                if (i%2 == 1 && username == "appy")
+                    data.push(d.result[i]);
+                else if (i%2 == 0 && username == "manav")
+                    data.push(d.result[i]);
+            }
+            //data = d.result;
             all_data = data;
-
 
             r = Math.floor(h * 0.5 / (num_levels));  // Center radius.
             rs = [1.3 * r, 1.1 * r, 0.9 * r, 0.8 * r, 0.7 * r];  // Scale nearer circles larger.
@@ -67,10 +90,46 @@
                 cx: w / 2, cy: h / 2, r: r, stroke: 'red',
                 'stroke-width': 7, 'fill-opacity': 0.0
             });
-            svg.append("image").attr({'xlink:href': "https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png", x: w / 2 - r, y: h / 2 - r,height: 2 * r, width: 2 * r});
+            if (username == "appy") {
+                svg.append("image").attr({
+                    'xlink:href': "https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/0a4/22c/2ba9ffb.jpg",
+                    x: w / 2 - r,
+                    y: h / 2 - r,
+                    height: 2 * r,
+                    width: 2 * r,
+                    onmousedown: "showUserInfo();",
+                });
+            } else if (username == "manav") {
+                svg.append("image").attr({
+                    'xlink:href': "https://media.licdn.com/media/p/7/005/01f/22b/367fe1b.jpg",
+                    x: w / 2 - r,
+                    y: h / 2 - r,
+                    height: 2 * r,
+                    width: 2 * r,
+                    onmousedown: "showUserInfo();",
+                });
+            } else {
+                svg.append("image").attr({
+                    'xlink:href': "https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png",
+                    x: w / 2 - r,
+                    y: h / 2 - r,
+                    height: 2 * r,
+                    width: 2 * r,
+                });
+            }
+            svg.append("circle").attr({
+                    cx: w / 2, cy: h / 2, r: r + rs[0]/2, stroke: 'white',
+                    'stroke-width': rs[0], 'fill-opacity': 0.0,
+                    onmousedown: "showUserInfo();",
+                });
             svg.append("line").attr({
                 x1: w + pad, y1: 0, x2: w + pad, y2: h, stroke: 'black',
                 'stroke-width': 5
+            });
+            svg.append("circle").attr({
+                cx: w / 2, cy: h / 2, r: r, stroke: 'red',
+                'stroke-width': 7, 'fill-opacity': 0.0,
+                onmousedown: "showUserInfo();",
             });
 
             temp_r = r;

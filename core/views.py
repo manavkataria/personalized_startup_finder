@@ -34,7 +34,7 @@ USERS = {
         'location':'CA',
     },
     'appy': {
-        'domains':['software, web'],
+        'domains':'software, web',
         'location': 'CA',
     },
     'web': {
@@ -161,15 +161,10 @@ def getGlassdoorInfo(company):
             if employers and len(employers) > 0:
                 employer_top = employers[0]
 
-    # id, name, website, numberOfRatings, squareLogo, overallRating
-    # cultureAndValuesRating: "4.1",
-    # seniorLeadershipRating: "3.5",
-    # compensationAndBenefitsRating: "4.1",
-    # careerOpportunitiesRating: "3.5",
-    # workLifeBalanceRating: "3.3",
-    # recommendToFriendRating: "0.8",
-
     if employer_top is not None:
+        # Returned Attributes
+        # id, name, website, numberOfRatings, squareLogo, overallRating
+
         result = {
             'id': employer_top.get('id', None),
             'name': employer_top.get('name', None),
@@ -180,6 +175,7 @@ def getGlassdoorInfo(company):
         }
     else:
         result = None
+
 
     pickle.dump(result, open(company + ".glassdoor.pkl", "wb"))
     return result
