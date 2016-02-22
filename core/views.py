@@ -30,8 +30,7 @@ def userpng(request):
 
 USERS = {
     'manav': {
-        'domains':'medical, analytics, health, education',
-        'location':'CA',
+        'domains':'medical, health',
     },
     'appy': {
         'domains':'software, web',
@@ -90,6 +89,9 @@ def getRanking(domains, location):
     for domain in domains:
         companies = companies | CbObjects.objects.filter(category_code=domain)
 
+        if location is not None and location != '':
+            companies = companies & CbObjects.objects.filter(state_code=location)
+
     companies_names_qs = companies.values('name')
     companies_names = [companies_dict.get('name') for companies_dict in companies_names_qs]
 
@@ -146,43 +148,42 @@ def getGlassdoorInfo(company):
 
         if (f):
             return pickle.load(f)
+
+        url = "http://api.glassdoor.com/api/api.htm?t.p=55690&t.k=em66CFmfXYu&userip=172.23.227.50&useragent=Mozilla&format=json&v=1&action=employers&q="
+        hdr = {'User-Agent': 'Mozilla/5.0'}
+        finalURL = url + urllib2.quote(company)
+        req_encoded = urllib2.Request(finalURL, headers=hdr)
+
+        response_json = urllib2.urlopen(req_encoded)
+
+        employer_top = None
+
+        if response_json.getcode() == 200:
+            response = json.load(response_json).get('response')
+
+            if response:
+                employers = response.get('employers')
+                if employers and len(employers) > 0:
+                    employer_top = employers[0]
+
+        if employer_top is not None:
+            # Returned Attributes
+            # id, name, website, numberOfRatings, squareLogo, overallRating
+
+            result = {
+                'id': employer_top.get('id', None),
+                'name': employer_top.get('name', None),
+                'website': employer_top.get('website', None),
+                'numberOfRatings': employer_top.get('numberOfRatings', None),
+                'squareLogo': employer_top.get('squareLogo', None),
+                'overallRating': employer_top.get('overallRating', None),
+            }
+        else:
+            result = None
+
+
+        pickle.dump(result, open('pkl/' + company + ".glassdoor.pkl", "wb"))
     except:
-        # continue if pickle files not found.
-        pass
-
-    url = "http://api.glassdoor.com/api/api.htm?t.p=55690&t.k=em66CFmfXYu&userip=172.23.227.50&useragent=Mozilla&format=json&v=1&action=employers&q="
-    hdr = {'User-Agent': 'Mozilla/5.0'}
-    finalURL = url + urllib2.quote(company)
-    req_encoded = urllib2.Request(finalURL, headers=hdr)
-
-    # print finalURL
-    # req_encoded = urllib2.quote(req, safe='')
-    response_json = urllib2.urlopen(req_encoded)
-
-    employer_top = None
-
-    if response_json.getcode() == 200:
-        response = json.load(response_json).get('response')
-
-        if response:
-            employers = response.get('employers')
-            if employers and len(employers) > 0:
-                employer_top = employers[0]
-
-    if employer_top is not None:
-        # Returned Attributes
-        # id, name, website, numberOfRatings, squareLogo, overallRating
-
-        result = {
-            'id': employer_top.get('id', None),
-            'name': employer_top.get('name', None),
-            'website': employer_top.get('website', None),
-            'numberOfRatings': employer_top.get('numberOfRatings', None),
-            'squareLogo': employer_top.get('squareLogo', None),
-            'overallRating': employer_top.get('overallRating', None),
-        }
-    else:
         result = None
 
-    pickle.dump(result, open('pkl/' + company + ".glassdoor.pkl", "wb"))
     return result
