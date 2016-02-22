@@ -51,9 +51,15 @@ def compile_user_params(username='manav'):
     :param username:
     :return: json object to Frontend API call
     """
-    userdata = USERS.get(username) # from frontend
-    domains = userdata.get('domains').replace(',','').split() # from fronend
-    location = userdata.get('location')
+
+    if username in USERS.keys():
+        userdata = USERS.get(username) # from frontend
+        domains = userdata.get('domains').replace(',','').split()
+        location = userdata.get('location')
+    else:
+        # parse for domains
+        domains = username.replace(',','').split()
+        location = None
 
     result =  getRanking(domains, location)
     return result
