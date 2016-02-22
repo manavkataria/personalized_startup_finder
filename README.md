@@ -14,5 +14,5 @@ Pending Integrations:
 + sudo -H pip install -U -r requirements.txt
 + python manage.py runserver 
 + http://localhost:8000/ui
-++ Enter "manav" in the text box for Ranked results of Companies.
++ Enter "manav" in the text box for Ranked results of Companies.
 
